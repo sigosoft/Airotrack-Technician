@@ -1081,8 +1081,7 @@ class _DeviceDetailState extends State<DeviceDetail> {
                                                               controller
                                                                   .deviceDetails!
                                                                   .imei,
-                                                              command.id
-                                                                  .toString());
+                                                              command.command);
                                                     },
                                                     child: const Text(
                                                       "Send",

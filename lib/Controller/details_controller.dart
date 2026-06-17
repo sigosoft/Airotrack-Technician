@@ -114,7 +114,7 @@ class DetailsController extends GetxController {
     }
   }
 
-  sendCommands(String imei, String commandId) async {
+  sendCommands(String imei, String command) async {
     checkNetworkAndRedirectOffAll();
     try {
       showDialog(
@@ -132,7 +132,7 @@ class DetailsController extends GetxController {
           });
       var token = getSavedObject('token') ?? "";
       var url = APIConfig.BASE_URL + APIEndpoints.sendCommand;
-      FormData data = FormData.fromMap({"imei": imei, "command_id": commandId});
+      FormData data = FormData.fromMap({"imei": imei, "command": command});
       dio.options.headers["Authorization"] = "Bearer $token";
       if (await checkNetwork()) {
         var response = await dio.post(url, data: data);
