@@ -8,8 +8,8 @@ class Command {
   });
 
   factory Command.fromJson(Map<String, dynamic> json) => Command(
-        id: json["id"],
-        command: json["command"],
+        id: _parseInt(json["id"]),
+        command: _parseString(json["command"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -36,7 +36,7 @@ class DeviceDetails {
   String longitude;
   String alertId;
   String deviceModel;
-  dynamic  lastUpdateDate;
+  dynamic lastUpdateDate;
   dynamic lastUpdateTime;
 
   DeviceDetails(
@@ -61,34 +61,29 @@ class DeviceDetails {
       required this.lastUpdateTime});
 
   factory DeviceDetails.fromJson(Map<String, dynamic> json) => DeviceDetails(
-        id: json["id"],
-        imei: json["imei"],
+        id: _parseInt(json["id"]),
+        imei: _parseString(json["imei"]),
         firmwareVersion: json["firmware_version"],
-        power: json["power"] ?? 0,
-        gnssFix: json["gnss_fix"] ?? 0,
-        gsmSignalStrength: json["gsm_signal_strength"] ?? 0,
-        ignition: json["ignition"] ?? 0,
-        primaryMobileNumber: json["primary_mobile_number"] == null
-            ? ""
-            : json["primary_mobile_number"].toString(),
-        secondaryMobileNumber: json["secondary_mobile_number"] == null
-            ? ""
-            : json["secondary_mobile_number"].toString(),
-        networkProvider: json["network_provider"] == null
-            ? ""
-            : json["network_provider"].toString(),
-        simProvider:
-            json["sim_provider"] == null ? "" : json["sim_provider"].toString(),
-        simActivationDate: json["sim_activation_date"] == null
+        power: _parseInt(json["power"]),
+        gnssFix: _parseInt(json["gnss_fix"]),
+        gsmSignalStrength: _parseInt(json["gsm_signal_strength"]),
+        ignition: _parseInt(json["ignition"]),
+        primaryMobileNumber: _parseString(json["primary_mobile_number"]),
+        secondaryMobileNumber: _parseString(json["secondary_mobile_number"]),
+        networkProvider: _parseString(json["network_provider"]),
+        simProvider: _parseString(json["sim_provider"]),
+        simActivationDate: json["sim_activation_date"] == null ||
+                json["sim_activation_date"].toString().isEmpty
             ? null
-            : DateTime.parse(json["sim_activation_date"]),
-        expirationtime: json["expirationtime"] == null
+            : DateTime.tryParse(json["sim_activation_date"].toString()),
+        expirationtime: json["expirationtime"] == null ||
+                json["expirationtime"].toString().isEmpty
             ? null
-            : DateTime.parse(json["expirationtime"]),
-        latitude: json["latitude"] ?? "0.00",
-        longitude: json["longitude"] ?? "0.00",
-        alertId: json["alert_id"] ?? "",
-        deviceModel: json["device_model"] ?? "",
+            : DateTime.tryParse(json["expirationtime"].toString()),
+        latitude: _parseString(json["latitude"] ?? "0.00"),
+        longitude: _parseString(json["longitude"] ?? "0.00"),
+        alertId: _parseString(json["alert_id"]),
+        deviceModel: _parseString(json["device_model"]),
         lastUpdateDate: json["lastupdate_date"],
         lastUpdateTime: json["lastupdate_time"],
       );
@@ -114,4 +109,18 @@ class DeviceDetails {
         "lastupdate_date": lastUpdateDate,
         "lastupdate_time": lastUpdateTime,
       };
+}
+
+int _parseInt(dynamic value) {
+  if (value == null) return 0;
+  if (value is int) return value;
+  if (value is double) return value.toInt();
+  return int.tryParse(value.toString()) ??
+      double.tryParse(value.toString())?.toInt() ??
+      0;
+}
+
+String _parseString(dynamic value) {
+  if (value == null) return "";
+  return value.toString();
 }
