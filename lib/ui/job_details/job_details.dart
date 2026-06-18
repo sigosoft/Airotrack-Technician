@@ -52,9 +52,15 @@ class _JobDetailsState extends State<JobDetails> {
             onBack: () {
               Navigator.pop(context);
             }),
-        body: SingleChildScrollView(
-          padding: EdgeInsets.all(media.width * 0.04),
-          child: SafeArea(
+        body: RefreshIndicator(
+          onRefresh: () async {
+            await Future.delayed(const Duration(seconds: 1));
+            controller.update();
+          },
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: EdgeInsets.all(media.width * 0.04),
+            child: SafeArea(
             top: false,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -194,7 +200,7 @@ class _JobDetailsState extends State<JobDetails> {
               ],
             ),
           ),
-        ),
+        )),
       ),
     );
   }

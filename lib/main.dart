@@ -22,11 +22,15 @@ class MyApp extends StatelessWidget {
         fontFamily: "Poppins",
         colorScheme: ColorScheme.fromSeed(
             seedColor: colorPrimary,
+            primary: colorPrimary,
             surface: Colors.white,
             surfaceTint: Colors.white),
         useMaterial3: true,
         dialogTheme: const DialogThemeData(
           backgroundColor: Colors.white,
+        ),
+        progressIndicatorTheme: const ProgressIndicatorThemeData(
+          color: colorPrimary,
         ),
       ),
       home: const Splash(),

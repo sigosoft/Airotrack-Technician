@@ -73,8 +73,13 @@ class _HomeState extends State<Home> {
                 ? const Center(
                     child: CircularProgressIndicator(),
                   )
-                : SingleChildScrollView(
-                    child: Column(
+                : RefreshIndicator(
+                    onRefresh: () async {
+                      await controller.refreshHomeData("");
+                    },
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -324,7 +329,7 @@ class _HomeState extends State<Home> {
                             )),
                       ],
                     ),
-                  ));
+                  )));
       },
     );
   }

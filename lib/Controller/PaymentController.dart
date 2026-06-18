@@ -37,7 +37,11 @@ class PaymentController extends GetxController {
   TextEditingController paymentIdController = TextEditingController();
   final List<String> paymentMethods = ["Cash", "Online", "Cash + Online"];
   bool isLoading = false;
-  Dio dio = Dio();
+  Dio dio = () {
+    final d = Dio();
+    configureDio(d);
+    return d;
+  }();
   String qrCode = "";
   double qrCodeAmount = 0.0;
   List<CompanyData> companyTitles = [];

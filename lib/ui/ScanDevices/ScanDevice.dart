@@ -21,30 +21,43 @@ class ScanDeviceScreen extends StatelessWidget {
     return Scaffold(
       appBar:
           RecentJobsAppBar(title: Strings.scanDevice, onTap: () => Get.back()),
-      body: Padding(
-        padding: EdgeInsets.all(media.width * 0.04),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const BoldTextPoppins(
-                text: Strings.scanDevice, color: Colors.black, fontSize: 18),
-            SizedBox(height: media.height * 0.015),
-            OpenScannerButton(
-              media: media,
-              buttonColor: colorPrimary,
-              onPressed: () => Get.to(() => const QRViewExample()),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await Future.delayed(const Duration(seconds: 1));
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: media.height - 80,
             ),
-            SizedBox(height: media.height * 0.025),
-            const BoldTextPoppins(
-                text: Strings.deviceID, color: Colors.black, fontSize: 18),
-            SizedBox(height: media.height * 0.01),
-            DeviceIdTextField(
-              deviceIdController: deviceIdController,
-              media: media,
-              onPressed: () => Get.to(
-                  () => DeviceDetail(imei: deviceIdController.text.trim())),
+            child: Padding(
+              padding: EdgeInsets.all(media.width * 0.04),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const BoldTextPoppins(
+                      text: Strings.scanDevice, color: Colors.black, fontSize: 18),
+                  SizedBox(height: media.height * 0.015),
+                  OpenScannerButton(
+                    media: media,
+                    buttonColor: colorPrimary,
+                    onPressed: () => Get.to(() => const QRViewExample()),
+                  ),
+                  SizedBox(height: media.height * 0.025),
+                  const BoldTextPoppins(
+                      text: Strings.deviceID, color: Colors.black, fontSize: 18),
+                  SizedBox(height: media.height * 0.01),
+                  DeviceIdTextField(
+                    deviceIdController: deviceIdController,
+                    media: media,
+                    onPressed: () => Get.to(
+                        () => DeviceDetail(imei: deviceIdController.text.trim())),
+                  ),
+                ],
+              ),
             ),
-          ],
+          ),
         ),
       ),
     );

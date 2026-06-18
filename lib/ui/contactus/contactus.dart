@@ -28,12 +28,22 @@ class ContactUs extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body: Container(
-        margin: const EdgeInsets.all(25),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await Future.delayed(const Duration(seconds: 1));
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height - 80,
+            ),
+            child: Container(
+              margin: const EdgeInsets.all(25),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
             const SizedBox(
               height: 10,
             ),
@@ -128,7 +138,10 @@ class ContactUs extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ),
+  ),
+),
+);
   }
 
   Future<void> _launchUrl(String url) async {

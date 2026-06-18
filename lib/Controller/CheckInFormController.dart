@@ -41,7 +41,11 @@ class CheckInFormController extends GetxController {
 // the variables should be declared here
   bool isLoading = true;
   bool isCheckInLoading = false;
-  Dio dio = Dio();
+  Dio dio = () {
+    final d = Dio();
+    configureDio(d);
+    return d;
+  }();
   WorkDetailsModel? workDetails;
   ImagePicker imagePicker = ImagePicker();
   XFile? selectedImage;

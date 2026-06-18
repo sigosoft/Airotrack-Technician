@@ -35,8 +35,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
       ),
       body: Padding(
         padding: EdgeInsets.all(media.width * 0.04),
-        child: SingleChildScrollView(
-          physics: const NeverScrollableScrollPhysics(),
+        child: RefreshIndicator(
+          onRefresh: () async {
+            if (Get.isRegistered<PaymentController>()) {
+              await Get.find<PaymentController>().getCompanyTitles();
+            }
+          },
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
           child: SizedBox(
             height: media.height,
             width: media.width,
@@ -132,7 +138,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
               ),
             ),
           ),
-        ),
+        )),
       ),
     );
   }

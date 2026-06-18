@@ -14,7 +14,11 @@ import '../ui/utils/utils.dart';
 class EarningsController extends GetxController {
 
   bool isLoading = true;
-  Dio dio = Dio();
+  Dio dio = () {
+    final d = Dio();
+    configureDio(d);
+    return d;
+  }();
   EarningsModel? earningsData;
   List<EarningsByDate>? earningsByDate=[];
 

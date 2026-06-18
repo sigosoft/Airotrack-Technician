@@ -49,7 +49,11 @@ class CreateNewWorkController extends GetxController {
   String? selectedProduct = "";
   String? selectedWorkType = "";
   bool isLoading = false;
-  Dio dio = Dio();
+  Dio dio = () {
+    final d = Dio();
+    configureDio(d);
+    return d;
+  }();
   int productId = 0;
   int workTypeId = 0;
   TextEditingController customerNameController = TextEditingController();

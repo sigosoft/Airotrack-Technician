@@ -51,77 +51,79 @@ class RecentJobsScreen extends StatelessWidget {
                   ):
               controller.recentJobsByDate!.length == 0
                   ? Expanded(
-                    child: Container(
-                                    color: Colors.white,
-                                    alignment: Alignment.center,
-                                    margin: const EdgeInsets.all(15),
-                                    child: SafeArea(
-                    child: Stack(
-                      children: <Widget>[
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            // Container(
-                            //   alignment: Alignment.center,
-                            //   margin: const EdgeInsets.only(
-                            //       bottom: 40,
-                            //       // top: 100,
-                            //       left: 40,
-                            //       right: 40),
-                            //   child: Image.asset(
-                            //     "lib/Assets/Images/nodata.png",
-                            //   ),
-                            // ),
-                            Container(
-                              alignment: Alignment.center,
-                              child: Column(
-                                children: [
-                                  Text(
-                                    "No Recent Jobs Found",
-                                    style: TextStyle(
-                                        fontFamily: 'Poppins-Regular',
-                                        fontSize: 20,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  const SizedBox(
-                                    height: 20,
-                                  ),
-                                  Text(
-                                    "There is no recent jobs to show",
-                                    style: TextStyle(
-                                        fontFamily: 'Poppins-Regular',
-                                        fontSize: 15,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.normal),
-                                  ),
-                                  const SizedBox(
-                                    height: 3,
-                                  ),
-                                  Text(
-                                    "you right now.",
-                                    style: TextStyle(
-                                        fontFamily: 'Poppins-Regular',
-                                        fontSize: 15,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.normal),
+                      child: RefreshIndicator(
+                        onRefresh: () async {
+                          await controller.getRecentJobs();
+                        },
+                        child: SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: Container(
+                            height: media.height * 0.7,
+                            color: Colors.white,
+                            alignment: Alignment.center,
+                            margin: const EdgeInsets.all(15),
+                            child: SafeArea(
+                              child: Stack(
+                                children: <Widget>[
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        alignment: Alignment.center,
+                                        child: Column(
+                                          children: [
+                                            Text(
+                                              "No Recent Jobs Found",
+                                              style: TextStyle(
+                                                  fontFamily: 'Poppins-Regular',
+                                                  fontSize: 20,
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            const SizedBox(
+                                              height: 20,
+                                            ),
+                                            Text(
+                                              "There is no recent jobs to show",
+                                              style: TextStyle(
+                                                  fontFamily: 'Poppins-Regular',
+                                                  fontSize: 15,
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.normal),
+                                            ),
+                                            const SizedBox(
+                                              height: 3,
+                                            ),
+                                            Text(
+                                              "you right now.",
+                                              style: TextStyle(
+                                                  fontFamily: 'Poppins-Regular',
+                                                  fontSize: 15,
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.normal),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
                             ),
-                          ],
+                          ),
                         ),
-
-                      ],
-                    ),
-                                    ),
-                                  ),
-                  )
+                      ),
+                    )
                   :
               Expanded(
-                child: SingleChildScrollView(
-                    controller: controller.scrollcontroller,
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    await controller.getRecentJobs();
+                  },
+                  child: SingleChildScrollView(
+                      controller: controller.scrollcontroller,
+                      physics: const AlwaysScrollableScrollPhysics(),
                     child: Container(
                       color: Colors.white,
                       child: Column(children: [
@@ -191,7 +193,7 @@ class RecentJobsScreen extends StatelessWidget {
                             ),
                           ),
                       ]),
-                    )),
+                    ))),
               ),
               // const DateText(date: "20 Aug 2023"),
               // SizedBox(height: media.height * 0.02),

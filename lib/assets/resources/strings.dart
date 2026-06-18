@@ -149,4 +149,5 @@ class Strings {
   static const String enterSpeedGovernorId = "Enter Speed Governor Id";
   static const String paymentId = "Payment ID";
   static const String createdDate = "Created Date: ";
+  static const String status = "Status";
 }

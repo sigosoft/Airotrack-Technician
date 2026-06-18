@@ -11,7 +11,11 @@ import '../ui/utils/utils.dart';
 class RecentJobsController extends GetxController {
 
   bool isLoading = true;
-  Dio dio = Dio();
+  Dio dio = () {
+    final d = Dio();
+    configureDio(d);
+    return d;
+  }();
   RecentJobsModel? recentJobsData;
   List<RecentJobsDateData>? recentJobsByDate=[];
 

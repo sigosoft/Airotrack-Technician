@@ -53,7 +53,11 @@ class JobDetailsController extends GetxController {
   final LatLng center = const LatLng(9.9312, 76.2673);
   Set<Marker> markers = {};
   bool isLoading = false;
-  Dio dio = Dio();
+  Dio dio = () {
+    final d = Dio();
+    configureDio(d);
+    return d;
+  }();
   WorkDetailsModel? workDetails;
   final TextEditingController reasonController = TextEditingController();
   final TextEditingController techniciansNoteController =

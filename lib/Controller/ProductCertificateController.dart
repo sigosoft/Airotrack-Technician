@@ -24,7 +24,11 @@ class ProductCertificateController extends GetxController {
 
   String? localPdfPath;
   bool isLoading = false;
-  Dio dio = Dio();
+  Dio dio = () {
+    final d = Dio();
+    configureDio(d);
+    return d;
+  }();
   String productCertificate = "";
 
   Future<void> generateProductCertificate(String id) async {

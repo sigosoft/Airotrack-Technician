@@ -53,7 +53,11 @@ class HomeController extends GetxController {
 
   // declare all the variable only here
   bool isLoading = true;
-  Dio dio = Dio();
+  Dio dio = () {
+    final d = Dio();
+    configureDio(d);
+    return d;
+  }();
   dynamic homeData;
   List workTypes = ["Pending Works", "Ongoing Works", "Completed Works"];
   MaintenanceData? settings;

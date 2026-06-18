@@ -2,6 +2,7 @@ import 'package:airotrackgit/assets/resources/colors.dart';
 import 'package:airotrackgit/ui/utils/Widgets/NormalTextPoppins.dart';
 import 'package:airotrackgit/ui/CreateNewWork/LocationPickerScreen.dart';
 import 'package:airotrackgit/Controller/CreateNewWorkController.dart';
+import 'package:airotrackgit/ui/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -29,7 +30,11 @@ class _SearchLocationFieldState extends State<SearchLocationField> {
   bool isSearching = false;
   List<Map<String, dynamic>> searchResults = [];
   String? selectedLocationName;
-  final Dio _dio = Dio();
+  final Dio _dio = () {
+    final d = Dio();
+    configureDio(d);
+    return d;
+  }();
   final String apiKey = "AIzaSyBP1YuOeIr9DdXXdVs-hYAsDe3Q3YmCHQE";
 
   @override

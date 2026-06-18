@@ -47,8 +47,13 @@ class CheckInFormScreen extends StatelessWidget {
             : Scaffold(
                 appBar: CustomAppBar(
                     title: Strings.checkInForm, onBack: () => Get.back()),
-                body: SingleChildScrollView(
-                  child: Padding(
+                body: RefreshIndicator(
+                  onRefresh: () async {
+                    await controller.fetchWorkDetails(jobId);
+                  },
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: Padding(
                     padding: EdgeInsets.all(media.width * 0.04),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -263,7 +268,7 @@ class CheckInFormScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                ),
+                 )),
               ),
       ),
     );

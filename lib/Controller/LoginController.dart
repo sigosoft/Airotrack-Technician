@@ -13,7 +13,11 @@ import 'package:airotrackgit/ui/no_internet/no_internet.dart';
 import 'package:airotrackgit/ui/utils/utils.dart';
 
 class LoginController extends GetxController {
-  Dio dio = Dio();
+  Dio dio = () {
+    final d = Dio();
+    configureDio(d);
+    return d;
+  }();
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 

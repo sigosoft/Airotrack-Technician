@@ -52,29 +52,45 @@ class _ProductCertificateScreenState extends State<ProductCertificateScreen> {
             body: Column(
               children: [
                 Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(media.width * 0.03),
-                    child: controller.isLoading == true
-                        ? const Center(
-                            child: CircularProgressIndicator(
-                            color: colorPrimary,
-                          ))
-                        : controller.productCertificate.isNotEmpty
-                            ? PDFView(
-                                filePath: controller.localPdfPath!,
-                                onRender: (pages) {
-                                  debugPrint("Pages: $pages");
-                                },
-                                onError: (error) {
-                                  debugPrint("Error: $error");
-                                },
-                                onPageError: (page, error) {
-                                  debugPrint("Page Error: $page, $error");
-                                },
-                              )
-                            : const Center(
-                                child: Text(Strings.noDataFound),
+                  child: RefreshIndicator(
+                    onRefresh: () async {
+                      await controller.generateProductCertificate(widget.jobId);
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.all(media.width * 0.03),
+                      child: controller.isLoading == true
+                          ? SingleChildScrollView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              child: Container(
+                                height: media.height * 0.7,
+                                alignment: Alignment.center,
+                                child: const CircularProgressIndicator(
+                                  color: colorPrimary,
+                                ),
                               ),
+                            )
+                          : controller.productCertificate.isNotEmpty
+                              ? PDFView(
+                                  filePath: controller.localPdfPath!,
+                                  onRender: (pages) {
+                                    debugPrint("Pages: $pages");
+                                  },
+                                  onError: (error) {
+                                    debugPrint("Error: $error");
+                                  },
+                                  onPageError: (page, error) {
+                                    debugPrint("Page Error: $page, $error");
+                                  },
+                                )
+                              : SingleChildScrollView(
+                                  physics: const AlwaysScrollableScrollPhysics(),
+                                  child: Container(
+                                    height: media.height * 0.7,
+                                    alignment: Alignment.center,
+                                    child: const Text(Strings.noDataFound),
+                                  ),
+                                ),
+                    ),
                   ),
                 ),
                 Padding(

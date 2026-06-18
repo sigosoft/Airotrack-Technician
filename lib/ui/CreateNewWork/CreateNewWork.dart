@@ -37,8 +37,15 @@ class CreateNewWorkScreen extends StatelessWidget {
           backgroundColor: Colors.white,
           appBar: CustomAppBar(
               title: Strings.createNewWork, onBack: () => Get.back()),
-          body: SingleChildScrollView(
-            padding: EdgeInsets.all(media.width * 0.04),
+          body: RefreshIndicator(
+            onRefresh: () async {
+              await controller.fetchRtoDetails();
+              await controller.fetchImeiDetails();
+              await controller.fetchVehicleList();
+            },
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: EdgeInsets.all(media.width * 0.04),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -204,7 +211,7 @@ class CreateNewWorkScreen extends StatelessWidget {
                     buttonText: Strings.createWork)
               ],
             ),
-          ),
+          )),
         ),
       ),
     );

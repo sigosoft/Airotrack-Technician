@@ -39,10 +39,16 @@ class AboutUs extends StatelessWidget {
           ),
           centerTitle: true,
         ),
-        body: SingleChildScrollView(
-          child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-              child: Html(data: aboutUs)),
+        body: RefreshIndicator(
+          onRefresh: () async {
+            await Future.delayed(const Duration(seconds: 1));
+          },
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+                child: Html(data: aboutUs)),
+          ),
         ));
   }
 }

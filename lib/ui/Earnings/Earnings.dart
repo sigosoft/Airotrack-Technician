@@ -59,77 +59,81 @@ class EarningsScreen extends StatelessWidget {
                   totalAmount: controller.earningsByDate!.length == 0?"₹0":"₹"+ controller.earningsData!.data!.totalEarnings.toString(),
                 ),
                 SizedBox(height: media.height * 0.02),
-                  controller.earningsByDate!.length == 0
-          ? Container(
-          color: Colors.white,
-          alignment: Alignment.center,
-          margin: const EdgeInsets.all(15),
-          child: SafeArea(
-            child: Stack(
-              children: <Widget>[
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Container(
-                    //   alignment: Alignment.center,
-                    //   margin: const EdgeInsets.only(
-                    //       bottom: 40,
-                    //       // top: 100,
-                    //       left: 40,
-                    //       right: 40),
-                    //   child: Image.asset(
-                    //     "lib/Assets/Images/nodata.png",
-                    //   ),
-                    // ),
-                    SizedBox(height: 100,),
-                    Container(
-                      alignment: Alignment.center,
-                      child: Column(
-                        children: [
-                          Text(
-                            "No Earnings Found",
-                            style: TextStyle(
-                                fontFamily: 'Poppins-Regular',
-                                fontSize: 20,
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Text(
-                            "There is no earnings to show",
-                            style: TextStyle(
-                                fontFamily: 'Poppins-Regular',
-                                fontSize: 15,
-                                color: Colors.black,
-                                fontWeight: FontWeight.normal),
-                          ),
-                          const SizedBox(
-                            height: 3,
-                          ),
-                          Text(
-                            "you right now.",
-                            style: TextStyle(
-                                fontFamily: 'Poppins-Regular',
-                                fontSize: 15,
-                                color: Colors.black,
-                                fontWeight: FontWeight.normal),
+              controller.earningsByDate!.length == 0
+          ? Expanded(
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  await controller.getEarnings();
+                },
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Container(
+                    height: media.height * 0.6,
+                    color: Colors.white,
+                    alignment: Alignment.center,
+                    margin: const EdgeInsets.all(15),
+                    child: SafeArea(
+                      child: Stack(
+                        children: <Widget>[
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(height: 100,),
+                              Container(
+                                alignment: Alignment.center,
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      "No Earnings Found",
+                                      style: TextStyle(
+                                          fontFamily: 'Poppins-Regular',
+                                          fontSize: 20,
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(
+                                      height: 20,
+                                    ),
+                                    Text(
+                                      "There is no earnings to show",
+                                      style: TextStyle(
+                                          fontFamily: 'Poppins-Regular',
+                                          fontSize: 15,
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.normal),
+                                    ),
+                                    const SizedBox(
+                                      height: 3,
+                                    ),
+                                    Text(
+                                      "you right now.",
+                                      style: TextStyle(
+                                          fontFamily: 'Poppins-Regular',
+                                          fontSize: 15,
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.normal),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
                     ),
-                  ],
+                  ),
                 ),
-
-              ],
-            ),
-          ),
-        ):
+              ),
+            ):
                 Expanded(
-                  child: SingleChildScrollView(
-                      controller: controller.scrollcontroller,
+                  child: RefreshIndicator(
+                    onRefresh: () async {
+                      await controller.getEarnings();
+                    },
+                    child: SingleChildScrollView(
+                        controller: controller.scrollcontroller,
+                        physics: const AlwaysScrollableScrollPhysics(),
                       child: Container(
                         color: Colors.white,
                         child: Column(children: [
@@ -195,7 +199,7 @@ class EarningsScreen extends StatelessWidget {
                               ),
                             ),
                         ]),
-                      )),
+                      ))),
                 )
               ],
             ),

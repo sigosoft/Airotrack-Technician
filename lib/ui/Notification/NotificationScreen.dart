@@ -32,13 +32,20 @@ class NotificationScreen extends StatelessWidget {
                 child: const BoldTextPoppins(
                     text: Strings.today, color: Colors.black, fontSize: 15)),
             Expanded(
-              child: ListView.separated(
-                itemCount: controller.notifications.length,
-                itemBuilder: (context, index) => NotificationTile(
-                  message: controller.notifications[index],
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  await Future.delayed(const Duration(seconds: 1));
+                  controller.update();
+                },
+                child: ListView.separated(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  itemCount: controller.notifications.length,
+                  itemBuilder: (context, index) => NotificationTile(
+                    message: controller.notifications[index],
+                  ),
+                  separatorBuilder: (context, index) =>
+                      SizedBox(height: media.height * 0.01),
                 ),
-                separatorBuilder: (context, index) =>
-                    SizedBox(height: media.height * 0.01),
               ),
             ),
           ],

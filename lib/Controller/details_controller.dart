@@ -10,7 +10,11 @@ import 'package:get/get.dart' hide FormData;
 
 class DetailsController extends GetxController {
   bool isLoading = false;
-  Dio dio = Dio();
+  Dio dio = () {
+    final d = Dio();
+    configureDio(d);
+    return d;
+  }();
   List<Command> commands = [];
   DeviceDetails? deviceDetails;
 

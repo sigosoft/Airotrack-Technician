@@ -1,20 +1,24 @@
 class Command {
   int id;
   String command;
+  String commandFor;
 
   Command({
     required this.id,
     required this.command,
+    required this.commandFor,
   });
 
   factory Command.fromJson(Map<String, dynamic> json) => Command(
         id: _parseInt(json["id"]),
         command: _parseString(json["command"]),
+        commandFor: _parseString(json["command_for"]),
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "command": command,
+        "command_for": commandFor,
       };
 }
 
@@ -38,6 +42,7 @@ class DeviceDetails {
   String deviceModel;
   dynamic lastUpdateDate;
   dynamic lastUpdateTime;
+  String status;
 
   DeviceDetails(
       {required this.id,
@@ -58,7 +63,8 @@ class DeviceDetails {
       required this.alertId,
       required this.deviceModel,
       required this.lastUpdateDate,
-      required this.lastUpdateTime});
+      required this.lastUpdateTime,
+      required this.status});
 
   factory DeviceDetails.fromJson(Map<String, dynamic> json) => DeviceDetails(
         id: _parseInt(json["id"]),
@@ -86,6 +92,7 @@ class DeviceDetails {
         deviceModel: _parseString(json["device_model"]),
         lastUpdateDate: json["lastupdate_date"],
         lastUpdateTime: json["lastupdate_time"],
+        status: _parseString(json["status"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -108,6 +115,7 @@ class DeviceDetails {
         "device_model": deviceModel,
         "lastupdate_date": lastUpdateDate,
         "lastupdate_time": lastUpdateTime,
+        "status": status,
       };
 }
 

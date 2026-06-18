@@ -6,7 +6,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide FormData;
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -99,12 +99,10 @@ showToast(String message, {BuildContext? context, SnackBarAction? action}) {
 showFlushBar(String message) {
   Flushbar(
     flushbarPosition: FlushbarPosition.TOP,
-    messageText:  Text(
+    messageText: Text(
       message,
       style: const TextStyle(
-          color: Colors.white,
-          fontSize: 16,
-          fontWeight: FontWeight.w500),
+          color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
     ),
     duration: const Duration(seconds: 3),
     backgroundColor: colorPrimary,
@@ -145,13 +143,15 @@ showErrorToast(Map<String, dynamic> message) {
     }
   }
 }
- Future<bool> checkNetwork() async {
+
+Future<bool> checkNetwork() async {
   try {
-    List<ConnectivityResult> connectivityResult = await Connectivity().checkConnectivity();
+    List<ConnectivityResult> connectivityResult =
+        await Connectivity().checkConnectivity();
     if (connectivityResult.contains(ConnectivityResult.wifi) ||
         connectivityResult.contains(ConnectivityResult.mobile)) {
       final result = await InternetAddress.lookup('google.com');
-  if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         return true;
       }
     }
@@ -161,4 +161,33 @@ showErrorToast(Map<String, dynamic> message) {
   return false;
 }
 
-
+void configureDio(Dio dio) {
+  dio.interceptors.add(InterceptorsWrapper(
+    onRequest: (options, handler) {
+      debugPrint("--> API CALL: ${options.method} ${options.uri}");
+      debugPrint("Token: ${options.headers['Authorization']}");
+      var requestData = options.data;
+      if (requestData is FormData) {
+        var fields =
+            requestData.fields.map((f) => "${f.key}: ${f.value}").join(", ");
+        var files = requestData.files
+            .map((f) => "${f.key}: ${f.value.filename}")
+            .join(", ");
+        requestData = "FormData [fields: {$fields}, files: {$files}]";
+      }
+      debugPrint("Request Body: $requestData");
+      debugPrint("Query Parameters: ${options.queryParameters}");
+      return handler.next(options);
+    },
+    onResponse: (response, handler) {
+      debugPrint("<-- RESPONSE STATUS: ${response.statusCode}");
+      debugPrint("Response Body: ${response.data}");
+      return handler.next(response);
+    },
+    onError: (e, handler) {
+      debugPrint("<-- ERROR: ${e.message}");
+      debugPrint("Error Response: ${e.response?.data}");
+      return handler.next(e);
+    },
+  ));
+}
