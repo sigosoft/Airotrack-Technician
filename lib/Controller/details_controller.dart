@@ -19,12 +19,15 @@ class DetailsController extends GetxController {
   DeviceDetails? deviceDetails;
 
   getDeatils(
-    String imei,
-  ) async {
+    String imei, {
+    bool showLoading = true,
+  }) async {
     checkNetworkAndRedirectOffAll();
     try {
-      isLoading = true;
-      update();
+      if (showLoading) {
+        isLoading = true;
+        update();
+      }
       var token = getSavedObject('token') ?? "";
       var url = APIConfig.BASE_URL + APIEndpoints.deviceDetails;
 
@@ -65,18 +68,23 @@ class DetailsController extends GetxController {
         showFlushBar(error.toString());
       }
     } finally {
-      isLoading = false;
+      if (showLoading) {
+        isLoading = false;
+      }
       update();
     }
   }
 
   getDeatilsWithId(
-    String id,
-  ) async {
+    String id, {
+    bool showLoading = true,
+  }) async {
     checkNetworkAndRedirectOffAll();
     try {
-      isLoading = true;
-      update();
+      if (showLoading) {
+        isLoading = true;
+        update();
+      }
       var token = getSavedObject('token') ?? "";
       var url = APIConfig.BASE_URL + APIEndpoints.deviceDetailswithId;
       dio.options.headers["Authorization"] = "Bearer $token";
@@ -113,7 +121,9 @@ class DetailsController extends GetxController {
         showFlushBar(error.toString());
       }
     } finally {
-      isLoading = false;
+      if (showLoading) {
+        isLoading = false;
+      }
       update();
     }
   }
