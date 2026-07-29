@@ -19,6 +19,7 @@ import 'package:airotrackgit/ui/utils/utils.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:geolocator/geolocator.dart';
 
+import 'package:airotrackgit/Model/imei_model.dart';
 import '../assets/resources/strings.dart';
 import '../ui/utils/Widgets/NormalTextPoppins.dart';
 import '../ui/utils/Widgets/YesButtonWidget.dart';
@@ -37,11 +38,11 @@ class HomeController extends GetxController {
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
       }
-      
+
       if (permission == LocationPermission.deniedForever) {
         debugPrint('Location permissions are permanently denied');
       }
-      
+
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         debugPrint('Location services are disabled.');
@@ -61,6 +62,8 @@ class HomeController extends GetxController {
   dynamic homeData;
   List workTypes = ["Pending Works", "Ongoing Works", "Completed Works"];
   MaintenanceData? settings;
+  List<IMEIModel> dealerDevicesList = [];
+  bool isFetchingDealerDevices = false;
 
   // No variables should be declared below this line
 
@@ -388,7 +391,7 @@ class HomeController extends GetxController {
       PackageInfo packageInfo = await PackageInfo.fromPlatform();
       String buildNumber = packageInfo.version;
       var url = APIConfig.BASE_URL + APIEndpoints.setting;
-      
+
       if (await checkNetwork()) {
         var response = await dio.get(url);
         if (response.statusCode == 200) {
@@ -420,6 +423,71 @@ class HomeController extends GetxController {
       }
     } finally {
       isLoading = false;
+      update();
+    }
+  }
+
+  List<dynamic> _extractList(dynamic input) {
+    if (input == null) return [];
+    if (input is List) return input;
+    if (input is Map) {
+      final map = Map<String, dynamic>.from(input);
+      if (map['devices'] != null) {
+        final res = _extractList(map['devices']);
+        if (res.isNotEmpty) return res;
+      }
+      if (map['data'] != null) {
+        final res = _extractList(map['data']);
+        if (res.isNotEmpty) return res;
+      }
+      if (map['items'] != null) {
+        final res = _extractList(map['items']);
+        if (res.isNotEmpty) return res;
+      }
+      if (map['list'] != null) {
+        final res = _extractList(map['list']);
+        if (res.isNotEmpty) return res;
+      }
+      for (var val in map.values) {
+        if (val is List && val.isNotEmpty) return val;
+        if (val is Map) {
+          final res = _extractList(val);
+          if (res.isNotEmpty) return res;
+        }
+      }
+    }
+    return [];
+  }
+
+  Future<void> fetchDealerDevices() async {
+    isFetchingDealerDevices = true;
+    update();
+    checkNetworkAndRedirectOffAll();
+    try {
+      var token = await getSavedObject("token");
+      debugPrint("Token: $token");
+      String url = APIConfig.BASE_URL + APIEndpoints.dealerDevices;
+      dio.options.headers["Authorization"] = "Bearer $token";
+      final response = await dio.get(url);
+      debugPrint("DealerDevices response: ${response.data}");
+      if (response.statusCode == 200) {
+        final List<dynamic> extracted = _extractList(response.data);
+        dealerDevicesList = IMEIModel.fromJsonList(extracted);
+        debugPrint(
+            "Parsed ${dealerDevicesList.length} dealer devices successfully");
+      } else {
+        throw Exception("Unexpected status code: ${response.statusCode}");
+      }
+    } on DioException catch (e) {
+      if (e.response != null) {
+        handleDioException(e);
+      } else {
+        debugPrint("Dio Exception without response: ${e.message}");
+      }
+    } catch (e, stackTrace) {
+      debugPrint("Unexpected Error fetching dealer devices: $e $stackTrace");
+    } finally {
+      isFetchingDealerDevices = false;
       update();
     }
   }

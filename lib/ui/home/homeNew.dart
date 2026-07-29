@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:airotrackgit/controller/home_controller.dart';
+import 'package:airotrackgit/Controller/home_controller.dart';
 import 'package:airotrackgit/Model/home_model.dart';
 import '../../assets/resources/strings.dart';
 import '../utils/utils.dart';

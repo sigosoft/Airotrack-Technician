@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:airotrackgit/Model/work_details_model.dart';
 import 'package:airotrackgit/assets/resources/strings.dart';
 import 'package:airotrackgit/config/api_config.dart';
-import 'package:airotrackgit/controller/home_controller.dart';
+import 'package:airotrackgit/Controller/home_controller.dart';
 import 'package:airotrackgit/ui/job_details/job_details.dart';
 import 'package:airotrackgit/ui/home/homeNew.dart';
 import 'package:airotrackgit/ui/home/home.dart';

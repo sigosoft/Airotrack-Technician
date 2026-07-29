@@ -11,7 +11,8 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import 'package:airotrackgit/assets/resources/colors.dart';
 import 'package:airotrackgit/assets/resources/strings.dart';
-import 'package:airotrackgit/controller/home_controller.dart';
+import 'package:airotrackgit/Controller/home_controller.dart';
+import 'package:airotrackgit/Model/imei_model.dart';
 import 'package:airotrackgit/ui/about/About.dart';
 import 'package:airotrackgit/ui/contactus/contactus.dart';
 import 'package:airotrackgit/ui/devices/devicedetails.dart';
@@ -48,6 +49,8 @@ class _HomeState extends State<Home> {
   TextEditingController deviceIdController = TextEditingController();
   final formKey = GlobalKey<FormState>();
   final homeCOntroller = Get.lazyPut(() => HomeController());
+  bool showImeiSuggestions = false;
+  bool showValidationError = false;
 
   @override
   Widget build(BuildContext context) {
@@ -80,256 +83,460 @@ class _HomeState extends State<Home> {
                     child: SingleChildScrollView(
                       physics: const AlwaysScrollableScrollPhysics(),
                       child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                            width: MediaQuery.of(context).size.width,
-                            height: MediaQuery.of(context).size.height * 0.2,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                              width: MediaQuery.of(context).size.width,
+                              height: MediaQuery.of(context).size.height * 0.2,
+                              margin: const EdgeInsets.only(
+                                  top: 30, left: 20, right: 20),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: colorPrimary,
+                                  border: Border.all(color: colorPrimary),
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                        margin: const EdgeInsets.only(
+                                            left: 15, top: 25),
+                                        child: const Text(
+                                          Strings.welcome,
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 18,
+                                              fontFamily: 'Poppins-Regular'),
+                                        )),
+                                    Container(
+                                        margin: const EdgeInsets.only(
+                                            left: 15, top: 15),
+                                        child: Text(
+                                          controller.homeData?.userName
+                                                  .toString() ??
+                                              "",
+                                          style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'Poppins-Bold'),
+                                        )),
+                                    Container(
+                                      margin: const EdgeInsets.only(
+                                          top: 25, left: 15),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              SvgPicture.asset(
+                                                'lib/assets/images/calendar.svg',
+                                                width: 20,
+                                                height: 20,
+                                              ),
+                                              const SizedBox(
+                                                width: 5,
+                                              ),
+                                              Text(
+                                                DateFormat('dd MMM yyyy')
+                                                    .format(DateTime.now()),
+                                                style: const TextStyle(
+                                                    fontFamily:
+                                                        'Poppins-Regular',
+                                                    fontSize: 15,
+                                                    color: Colors.white),
+                                              )
+                                            ],
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              SvgPicture.asset(
+                                                'lib/assets/images/schedulewhite.svg',
+                                                width: 20,
+                                                height: 20,
+                                              ),
+                                              const SizedBox(
+                                                width: 5,
+                                              ),
+                                              const ClockWidget(),
+                                              const SizedBox(
+                                                width: 15,
+                                              )
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              )),
+                          Container(
                             margin: const EdgeInsets.only(
-                                top: 30, left: 20, right: 20),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: colorPrimary,
-                                border: Border.all(color: colorPrimary),
-                                borderRadius: BorderRadius.circular(5),
+                                left: 20, right: 20, top: 25),
+                            child: const Text(
+                              Strings.scanDevice,
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: 'Poppins-Bold'),
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(
+                                left: 20, right: 20, top: 10),
+                            height: 55,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: colorPrimary,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(7),
+                                ),
                               ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              onPressed: () async {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const QRViewExample(),
+                                    ));
+                              },
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Container(
-                                      margin: const EdgeInsets.only(
-                                          left: 15, top: 25),
-                                      child: const Text(
-                                        Strings.welcome,
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 18,
-                                            fontFamily: 'Poppins-Regular'),
-                                      )),
-                                  Container(
-                                      margin: const EdgeInsets.only(
-                                          left: 15, top: 15),
-                                      child: Text(
-                                        controller.homeData?.userName
-                                                .toString() ??
-                                            "",
-                                        style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                            fontFamily: 'Poppins-Bold'),
-                                      )),
-                                  Container(
-                                    margin: const EdgeInsets.only(
-                                        top: 25, left: 15),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            SvgPicture.asset(
-                                              'lib/assets/images/calendar.svg',
-                                              width: 20,
-                                              height: 20,
-                                            ),
-                                            const SizedBox(
-                                              width: 5,
-                                            ),
-                                            Text(
-                                              DateFormat('dd MMM yyyy')
-                                                  .format(DateTime.now()),
-                                              style: const TextStyle(
-                                                  fontFamily: 'Poppins-Regular',
-                                                  fontSize: 15,
-                                                  color: Colors.white),
-                                            )
-                                          ],
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            SvgPicture.asset(
-                                              'lib/assets/images/schedulewhite.svg',
-                                              width: 20,
-                                              height: 20,
-                                            ),
-                                            const SizedBox(
-                                              width: 5,
-                                            ),
-                                            const ClockWidget(),
-                                            const SizedBox(
-                                              width: 15,
-                                            )
-                                          ],
-                                        )
-                                      ],
-                                    ),
+                                  SvgPicture.asset(
+                                    "lib/assets/images/barwhite.svg",
+                                    width: 27,
+                                    height: 27,
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  const Text(
+                                    Strings.openScanner,
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 17,
+                                        fontFamily: 'Poppins-Bold',
+                                        fontWeight: FontWeight.w600),
                                   )
                                 ],
                               ),
-                            )),
-                        Container(
-                          margin: const EdgeInsets.only(
-                              left: 20, right: 20, top: 25),
-                          child: const Text(
-                            Strings.scanDevice,
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                fontFamily: 'Poppins-Bold'),
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(
-                              left: 20, right: 20, top: 10),
-                          height: 55,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: colorPrimary,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(7),
-                              ),
-                            ),
-                            onPressed: () async {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const QRViewExample(),
-                                  ));
-                            },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SvgPicture.asset(
-                                  "lib/assets/images/barwhite.svg",
-                                  width: 27,
-                                  height: 27,
-                                ),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                const Text(
-                                  Strings.openScanner,
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 17,
-                                      fontFamily: 'Poppins-Bold',
-                                      fontWeight: FontWeight.w600),
-                                )
-                              ],
                             ),
                           ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(
-                              left: 20, right: 20, top: 25),
-                          child: const Text(
-                            Strings.imei,
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                fontFamily: 'Poppins-Bold'),
+                          Container(
+                            margin: const EdgeInsets.only(
+                                left: 20, right: 20, top: 25),
+                            child: const Text(
+                              Strings.imei,
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: 'Poppins-Bold'),
+                            ),
                           ),
-                        ),
-                        Form(
-                            key: formKey,
-                            child: Container(
-                              margin: const EdgeInsets.symmetric(
-                                  horizontal: 15, vertical: 20),
-                              child: TextFormField(
-                                controller: deviceIdController,
-                                keyboardType: TextInputType.number,
-                                textInputAction: TextInputAction.done,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'IMEI number is required';
-                                  } else if (value.length != 15) {
-                                    return 'IMEI number must be 15 digits';
-                                  } else if (!RegExp(r'^\d{15}$')
-                                      .hasMatch(value)) {
-                                    return 'IMEI number must contain only digits';
-                                  }
-                                  return null;
-                                },
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly
-                                ],
-                                onFieldSubmitted: (value) {
-                                  Get.to(() => DeviceDetail(
-                                        imei: value.toString(),
-                                      ));
-                                  deviceIdController.clear();
-                                },
-                                decoration: InputDecoration(
-                                    constraints:
-                                        const BoxConstraints(minHeight: 50),
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        horizontal: 15, vertical: 10),
-                                    fillColor: greybg,
-                                    filled: true,
-                                    errorBorder: OutlineInputBorder(
-                                        borderSide: const BorderSide(
-                                            color: blacklite, width: 1.0),
-                                        borderRadius: BorderRadius.circular(4)),
-                                    focusedErrorBorder: OutlineInputBorder(
-                                        borderSide: const BorderSide(
-                                            color: blacklite, width: 1.0),
-                                        borderRadius: BorderRadius.circular(4)),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderSide: const BorderSide(
-                                            color: blacklite, width: 1.0),
-                                        borderRadius: BorderRadius.circular(4)),
-                                    enabledBorder: OutlineInputBorder(
-                                        borderSide: const BorderSide(
-                                            color: blacklite, width: 1.0),
-                                        borderRadius: BorderRadius.circular(4)),
-                                    hintText: "Enter IMEI",
-                                    hintStyle:
-                                        const TextStyle(color: blacklite),
-                                    suffixIcon: InkWell(
+                          Form(
+                              key: formKey,
+                              autovalidateMode: AutovalidateMode.disabled,
+                              child: Container(
+                                margin: const EdgeInsets.symmetric(
+                                    horizontal: 15, vertical: 20),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    TextFormField(
+                                      controller: deviceIdController,
+                                      keyboardType: TextInputType.number,
+                                      textInputAction: TextInputAction.done,
                                       onTap: () {
-                                        debugPrint(
-                                            "deviceId: ${deviceIdController.text.trim()}");
-                                        if (formKey.currentState!.validate()) {
-                                          Get.to(() => DeviceDetail(
-                                                imei: deviceIdController.text
-                                                    .trim()
-                                                    .toString(),
-                                              ));
-                                        }
+                                        controller.fetchDealerDevices();
+                                        setState(() {
+                                          showValidationError = false;
+                                          showImeiSuggestions = true;
+                                        });
                                       },
-                                      child: Container(
-                                        decoration: const BoxDecoration(
-                                            color: colorPrimary,
-                                            borderRadius: BorderRadius.only(
-                                                topRight: Radius.circular(5),
-                                                bottomRight:
-                                                    Radius.circular(5))),
-                                        child: const Icon(
-                                          Icons.search,
-                                          color: Colors.white,
-                                        ),
+                                      onChanged: (value) {
+                                        if (controller
+                                                .dealerDevicesList.isEmpty &&
+                                            !controller
+                                                .isFetchingDealerDevices) {
+                                          controller.fetchDealerDevices();
+                                        }
+                                        setState(() {
+                                          showValidationError = false;
+                                          showImeiSuggestions = true;
+                                        });
+                                      },
+                                      validator: (value) {
+                                        if (!showValidationError) return null;
+                                        if (value == null || value.isEmpty) {
+                                          return 'IMEI number is required';
+                                        } else if (value.length != 15) {
+                                          return 'IMEI number must be 15 digits';
+                                        } else if (!RegExp(r'^\d{15}$')
+                                            .hasMatch(value)) {
+                                          return 'IMEI number must contain only digits';
+                                        }
+                                        return null;
+                                      },
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.digitsOnly
+                                      ],
+                                      onFieldSubmitted: (value) {
+                                        setState(() {
+                                          showImeiSuggestions = false;
+                                        });
+                                        Get.to(() => DeviceDetail(
+                                              imei: value.toString(),
+                                            ));
+                                        deviceIdController.clear();
+                                      },
+                                      decoration: InputDecoration(
+                                          constraints: const BoxConstraints(
+                                              minHeight: 50),
+                                          contentPadding:
+                                              const EdgeInsets.symmetric(
+                                                  horizontal: 15, vertical: 10),
+                                          fillColor: greybg,
+                                          filled: true,
+                                          errorBorder: OutlineInputBorder(
+                                              borderSide: const BorderSide(
+                                                  color: blacklite, width: 1.0),
+                                              borderRadius:
+                                                  BorderRadius.circular(4)),
+                                          focusedErrorBorder:
+                                              OutlineInputBorder(
+                                                  borderSide: const BorderSide(
+                                                      color: blacklite,
+                                                      width: 1.0),
+                                                  borderRadius:
+                                                      BorderRadius.circular(4)),
+                                          focusedBorder: OutlineInputBorder(
+                                              borderSide: const BorderSide(
+                                                  color: blacklite, width: 1.0),
+                                              borderRadius:
+                                                  BorderRadius.circular(4)),
+                                          enabledBorder: OutlineInputBorder(
+                                              borderSide: const BorderSide(
+                                                  color: blacklite, width: 1.0),
+                                              borderRadius:
+                                                  BorderRadius.circular(4)),
+                                          hintText: "Enter IMEI",
+                                          hintStyle:
+                                              const TextStyle(color: blacklite),
+                                          suffixIcon: InkWell(
+                                            onTap: () {
+                                              debugPrint(
+                                                  "deviceId: ${deviceIdController.text.trim()}");
+                                              setState(() {
+                                                showValidationError = true;
+                                              });
+                                              if (formKey.currentState!
+                                                  .validate()) {
+                                                setState(() {
+                                                  showImeiSuggestions = false;
+                                                  showValidationError = false;
+                                                });
+                                                Get.to(() => DeviceDetail(
+                                                      imei: deviceIdController
+                                                          .text
+                                                          .trim()
+                                                          .toString(),
+                                                    ));
+                                              }
+                                            },
+                                            child: Container(
+                                              decoration: const BoxDecoration(
+                                                  color: colorPrimary,
+                                                  borderRadius:
+                                                      BorderRadius.only(
+                                                          topRight:
+                                                              Radius.circular(
+                                                                  5),
+                                                          bottomRight:
+                                                              Radius.circular(
+                                                                  5))),
+                                              child: const Icon(
+                                                Icons.search,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          )),
+                                    ),
+                                    if (showImeiSuggestions)
+                                      Builder(
+                                        builder: (context) {
+                                          if (controller
+                                              .isFetchingDealerDevices) {
+                                            return Container(
+                                              margin:
+                                                  const EdgeInsets.only(top: 4),
+                                              padding: const EdgeInsets.all(12),
+                                              alignment: Alignment.center,
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
+                                                border: Border.all(
+                                                    color: blacklite,
+                                                    width: 1.0),
+                                              ),
+                                              child: const SizedBox(
+                                                width: 20,
+                                                height: 20,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                        strokeWidth: 2),
+                                              ),
+                                            );
+                                          }
+                                          final text = deviceIdController.text
+                                              .trim()
+                                              .toLowerCase();
+                                          final cleanText = text.replaceAll(
+                                              RegExp(r'\D'), '');
+                                          final filtered = controller
+                                              .dealerDevicesList
+                                              .where((item) {
+                                            if (text.isEmpty) return true;
+                                            final imei = item.imei
+                                                    ?.toLowerCase()
+                                                    .trim() ??
+                                                '';
+                                            final vehicleNo = item.vehicleNo
+                                                    ?.toLowerCase()
+                                                    .trim() ??
+                                                '';
+                                            final cleanImei = imei.replaceAll(
+                                                RegExp(r'\D'), '');
+
+                                            final matchImei = imei
+                                                    .contains(text) ||
+                                                (cleanText.isNotEmpty &&
+                                                    cleanImei
+                                                        .contains(cleanText));
+                                            final matchVehicle =
+                                                vehicleNo.contains(text);
+                                            return matchImei || matchVehicle;
+                                          }).toList();
+
+                                          if (filtered.isEmpty) {
+                                            return Container(
+                                              margin:
+                                                  const EdgeInsets.only(top: 4),
+                                              padding: const EdgeInsets.all(12),
+                                              alignment: Alignment.centerLeft,
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
+                                                border: Border.all(
+                                                    color: blacklite,
+                                                    width: 1.0),
+                                              ),
+                                              child: const Text(
+                                                "No matching IMEI found",
+                                                style: TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 13,
+                                                  fontFamily: 'Poppins-Regular',
+                                                ),
+                                              ),
+                                            );
+                                          }
+
+                                          return Container(
+                                            margin:
+                                                const EdgeInsets.only(top: 4),
+                                            constraints: const BoxConstraints(
+                                                maxHeight: 200),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                              border: Border.all(
+                                                  color: blacklite, width: 1.0),
+                                              boxShadow: const [
+                                                BoxShadow(
+                                                  color: Colors.black12,
+                                                  blurRadius: 4,
+                                                  offset: Offset(0, 2),
+                                                ),
+                                              ],
+                                            ),
+                                            child: ListView.separated(
+                                              shrinkWrap: true,
+                                              padding: EdgeInsets.zero,
+                                              itemCount: filtered.length > 10
+                                                  ? 10
+                                                  : filtered.length,
+                                              separatorBuilder:
+                                                  (context, index) =>
+                                                      const Divider(height: 1),
+                                              itemBuilder: (context, index) {
+                                                final item = filtered[index];
+                                                final displayStr = (item
+                                                                .vehicleNo !=
+                                                            null &&
+                                                        item.vehicleNo!
+                                                            .isNotEmpty)
+                                                    ? '${item.vehicleNo} - ${item.imei ?? ''}'
+                                                    : (item.imei ?? '');
+                                                return InkWell(
+                                                  onTap: () {
+                                                    setState(() {
+                                                      deviceIdController.text =
+                                                          item.imei ?? '';
+                                                      showImeiSuggestions =
+                                                          false;
+                                                      showValidationError =
+                                                          false;
+                                                    });
+                                                    FocusScope.of(context)
+                                                        .unfocus();
+                                                  },
+                                                  child: Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 15,
+                                                        vertical: 12),
+                                                    child: Text(
+                                                      displayStr,
+                                                      style: const TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 14,
+                                                        fontFamily:
+                                                            'Poppins-Regular',
+                                                      ),
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          );
+                                        },
                                       ),
-                                    )),
-                              ),
-                            )),
-                      ],
-                    ),
-                  )));
+                                  ],
+                                ),
+                              )),
+                        ],
+                      ),
+                    )));
       },
     );
   }
