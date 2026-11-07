@@ -40,6 +40,7 @@ class LoginController extends GetxController {
         });
         Response response = await dio.post(url, data: formData);
         if (response.statusCode == 200) {
+          resetSessionExpirationState();
           saveObject('token', response.data['data']['details']['token']);
           saveObject('role_id', response.data['data']['details']['role_id'].toString());
           if(response.data['data']['details']['role_id'].toString()=="3"){

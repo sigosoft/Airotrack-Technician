@@ -1,16 +1,55 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:airotrackgit/assets/resources/colors.dart';
+import 'package:airotrackgit/config/api_config.dart';
+import 'package:airotrackgit/ui/login/view/login.dart';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart' hide FormData;
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get_storage/get_storage.dart';
 
 final storagebox = GetStorage();
+bool isLoggingOutOrExpired = false;
+
+void resetSessionExpirationState() {
+  isLoggingOutOrExpired = false;
+}
+
+Future<void> handleTokenExpired() async {
+  var token = getSavedObject('token');
+  if (isLoggingOutOrExpired || token == null) {
+    return;
+  }
+  isLoggingOutOrExpired = true;
+
+  debugPrint(
+      "Token expired (401). Automatically logging out and navigating to Login screen.");
+  showToast("Unauthorized: Please login again");
+
+  await removename('token');
+  await removename('role_id');
+
+  void navigateToLogin() {
+    while (Get.isDialogOpen ?? false) {
+      Get.back();
+    }
+    Get.offAll(() => const Login());
+  }
+
+  if (WidgetsBinding.instance.schedulerPhase ==
+      SchedulerPhase.persistentCallbacks) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      navigateToLogin();
+    });
+  } else {
+    navigateToLogin();
+  }
+}
 saveObject(String key, value) {
   try {
     storagebox.write(key, json.encode(value));
@@ -187,6 +226,16 @@ void configureDio(Dio dio) {
     onError: (e, handler) {
       debugPrint("<-- ERROR: ${e.message}");
       debugPrint("Error Response: ${e.response?.data}");
+      if (e.response?.statusCode == 401) {
+        final path = e.requestOptions.path;
+        bool isAuthEndpoint = path.endsWith(APIEndpoints.login) ||
+            path.endsWith(APIEndpoints.logout) ||
+            path.contains('/${APIEndpoints.login}') ||
+            path.contains('/${APIEndpoints.logout}');
+        if (!isAuthEndpoint) {
+          handleTokenExpired();
+        }
+      }
       return handler.next(e);
     },
   ));

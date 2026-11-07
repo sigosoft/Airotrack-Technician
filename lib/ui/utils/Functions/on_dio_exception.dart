@@ -1,3 +1,4 @@
+import 'package:airotrackgit/config/api_config.dart';
 import 'package:airotrackgit/ui/server/serverdown.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,16 @@ void handleDioException(DioException e) {
         break;
       case 401:
         debugPrint("Unauthorized: ${e.response?.data}");
-        showToast("Unauthorized: Please login again");
+        final path = e.requestOptions.path;
+        bool isAuthEndpoint = path.endsWith(APIEndpoints.login) ||
+            path.endsWith(APIEndpoints.logout) ||
+            path.contains('/${APIEndpoints.login}') ||
+            path.contains('/${APIEndpoints.logout}');
+        if (!isAuthEndpoint) {
+          handleTokenExpired();
+        } else {
+          showToast("Unauthorized: Please login again");
+        }
         break;
       case 403:
         debugPrint("Forbidden: ${e.response?.data}");

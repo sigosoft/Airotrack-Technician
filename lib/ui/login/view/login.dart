@@ -1,6 +1,7 @@
 import 'package:airotrackgit/Controller/LoginController.dart';
 import 'package:airotrackgit/assets/resources/colors.dart';
 import 'package:airotrackgit/assets/resources/strings.dart';
+import 'package:airotrackgit/ui/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
@@ -14,6 +15,12 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    resetSessionExpirationState();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

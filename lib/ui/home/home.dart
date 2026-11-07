@@ -773,6 +773,7 @@ class _UserDrawerState extends State<UserDrawer> {
                               backgroundColor: colorPrimary,
                             ),
                             onPressed: () async {
+                              Navigator.pop(context);
                               await Get.put(HomeController()).logoutAPI();
                             },
                             child: Text(

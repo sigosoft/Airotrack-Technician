@@ -199,7 +199,18 @@ class HomeController extends GetxController {
   }
 
   logoutAPI() async {
-    checkNetworkAndRedirectOffAll();
+    resetSessionExpirationState();
+    var token = getSavedObject('token');
+    if (token == null || token.toString().trim().isEmpty) {
+      while (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
+      await removename('token');
+      await removename('role_id');
+      Get.offAll(() => const Login());
+      return;
+    }
+
     try {
       showDialog(
           context: Get.context!,
@@ -215,31 +226,31 @@ class HomeController extends GetxController {
             );
           });
       var url = APIConfig.BASE_URL + APIEndpoints.logout;
-      var token = getSavedObject('token') ?? "";
       dio.options.headers["Authorization"] = "Bearer $token";
       if (await checkNetwork()) {
-        var response = await dio.get(url);
-        if (response.statusCode == 200) {
-          Get.back();
-          showFlushBar(response.data['message']);
-          removename('token');
-          Get.offAll(() => const Login());
+        try {
+          var response = await dio.get(url);
+          if (response.statusCode == 200 &&
+              response.data != null &&
+              response.data['message'] != null) {
+            showFlushBar(response.data['message'].toString());
+          }
+        } on DioException catch (dioError) {
+          debugPrint(
+              "Logout DioException: ${dioError.response?.statusCode} -> ${dioError.response?.data}");
+        } catch (e) {
+          debugPrint("Logout request error: $e");
         }
-      } else {
-        Get.to(() => const NoInternet());
       }
     } catch (error) {
-      Get.back();
-      if (error is DioException) {
-        if (error.response?.data['message'] is Map) {
-          Map<String, dynamic> message = error.response?.data['message'];
-          showErrorToast(message);
-        } else {
-          showFlushBar(error.response?.data['message']);
-        }
-      } else {
-        showFlushBar(error.toString());
+      debugPrint("Error in logoutAPI: $error");
+    } finally {
+      while (Get.isDialogOpen ?? false) {
+        Get.back();
       }
+      await removename('token');
+      await removename('role_id');
+      Get.offAll(() => const Login());
     }
   }
 
@@ -333,7 +344,10 @@ class HomeController extends GetxController {
                       buttonColor: lightBlue),
                   SizedBox(width: media.width * 0.03),
                   YesButtonWidget(
-                      onTap: () => logoutAPI(),
+                      onTap: () {
+                        Get.back();
+                        logoutAPI();
+                      },
                       media: media,
                       text: Strings.yes,
                       textColor: Colors.white,
